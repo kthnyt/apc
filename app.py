@@ -1,6 +1,14 @@
-from flask import Flask, render_template, url_for
+import os
+from datetime import datetime
+
+from flask import Flask, render_template, url_for, flash, redirect
+from flask_sqlalchemy import SQLAlchemy
+
+from forms import SignupForm, LoginForm
 
 app = Flask(__name__)
+
+app.config['SECRET_KEY'] = os.environ['FLASK_SECRET_KEY']
 
 posts = [
     {
@@ -25,12 +33,34 @@ def home():
 
 
 @app.route('/torent')
-def to_rent():
+def torent():
     return render_template('torent.html', title='to Rent')
 
+
 @app.route('/forsale')
-def for_sale():
+def forsale():
     return render_template('forsale.html', title='for Sale')
+
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    form = SignupForm()
+    if form.validate_on_submit():
+        flash(f'Account created for {form.username.data}!', category='success')
+        return redirect(url_for('home'))
+    return render_template('signup.html', title='Signup', form=form)
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        if form.email.data == 'admin@apc.com' and form.password.data == 'password':
+            flash(f'Welcome {form.email.data.split("@")[0].capitalize()}. You have been logged !', category='success')
+            return redirect(url_for('home'))
+        else:
+            flash(f'Log in unsuccessful. Please check username and password', category='danger')
+    return render_template('login.html', title='Login', form=form)
 
 
 if __name__ == '__main__':

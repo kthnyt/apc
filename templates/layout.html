@@ -28,14 +28,14 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
             <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="/">Home</a>
-              <a class="nav-item nav-link" href="/torent">To Rent</a>
-              <a class="nav-item nav-link" href="/forsale">For Sale</a>
+              <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
+              <a class="nav-item nav-link" href="{{ url_for('torent') }}">To Rent</a>
+              <a class="nav-item nav-link" href="{{ url_for('forsale') }}">For Sale</a>
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
-              <a class="nav-item nav-link" href="/login">Login</a>
-              <a class="nav-item nav-link" href="/register">Signup</a>
+              <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
+              <a class="nav-item nav-link" href="{{ url_for('signup') }}">Signup</a>
             </div>
           </div>
         </div>
@@ -44,6 +44,15 @@
     <main role="main" class="container">
       <div class="row">
         <div class="col-md-8">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
           {% block content %}{% endblock %}
         </div>
         <div class="col-md-4">
