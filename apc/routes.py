@@ -1,6 +1,6 @@
 from flask import render_template, url_for, flash, redirect
 
-from apc import app
+from apc import app, db, bcrypt
 from apc.forms import SignupForm, LoginForm
 from apc.models import User, Post
 
@@ -41,8 +41,12 @@ def forsale():
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
-        flash(f'Account created for {form.username.data}!', category='success')
-        return redirect(url_for('home'))
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
+        flash(f'Your account has been created.  You are now able to log in.', category='success')
+        return redirect(url_for('login'))
     return render_template('signup.html', title='Signup', form=form)
 
 
